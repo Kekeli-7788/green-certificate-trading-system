@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}交易市场{% endblock %}
+{% block content %}
+<div class="card" style="padding:2.5rem;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+        <h2 style="margin-bottom:0;font-size:1.6rem;">交易市场 - 当前挂单</h2>
+        <div style="display:flex;gap:.8rem;">
+            <a href="{% url 'trading:create_order' %}" class="btn btn-primary" style="padding:.6rem 1.4rem;font-size:1rem;">+ 发布挂单</a>
+            <a href="{% url 'trading:trade_history' %}" class="btn btn-outline" style="padding:.6rem 1.4rem;font-size:1rem;">成交记录</a>
+        </div>
+    </div>
+    <div style="overflow-x:auto;">
+    <table style="font-size:1.05rem;">
+        <thead><tr>
+            <th style="padding:1rem 1.2rem;">用户</th>
+            <th style="padding:1rem 1.2rem;">类型</th>
+            <th style="padding:1rem 1.2rem;">绿证</th>
+            <th style="padding:1rem 1.2rem;">份额</th>
+            <th style="padding:1rem 1.2rem;">已成交</th>
+            <th style="padding:1rem 1.2rem;">单价(积分)</th>
+            <th style="padding:1rem 1.2rem;">状态</th>
+            <th style="padding:1rem 1.2rem;">过期时间</th>
+            <th style="padding:1rem 1.2rem;">操作</th>
+        </tr></thead>
+        <tbody>
+        {% for o in orders %}
+        <tr>
+            <td style="padding:1rem 1.2rem;">{{ o.user.username }}</td>
+            <td style="padding:1rem 1.2rem;">{% if o.order_type == 'buy' %}<span class="badge badge-green">买入</span>{% else %}<span class="badge badge-red">卖出</span>{% endif %}</td>
+            <td style="padding:1rem 1.2rem;">{{ o.certificate.cert_id|truncatechars:20 }}</td>
+            <td style="padding:1rem 1.2rem;">{{ o.shares }}</td>
+            <td style="padding:1rem 1.2rem;">{{ o.filled_shares }}</td>
+            <td style="padding:1rem 1.2rem;">{{ o.price_per_share }}</td>
+            <td style="padding:1rem 1.2rem;"><span class="badge badge-blue">{{ o.get_status_display }}</span></td>
+            <td style="padding:1rem 1.2rem;">{{ o.expire_time|date:"m-d H:i" }}</td>
+            <td style="padding:1rem 1.2rem;">
+                {% if o.user != user %}
+                <a href="{% url 'trading:negotiate' o.pk %}" class="btn btn-outline btn-sm">议价</a>
+                {% endif %}
+                {% if o.user == user %}
+                <a href="{% url 'trading:cancel_order' o.pk %}" class="btn btn-danger btn-sm" onclick="return confirm('确定取消？')">取消</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="9" style="padding:2rem;text-align:center;color:#888;font-size:1.1rem;">暂无挂单</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+
+<div class="card" style="padding:2.5rem;">
+    <h2 style="font-size:1.6rem;margin-bottom:1.5rem;">我的挂单</h2>
+    <div style="overflow-x:auto;">
+    <table style="font-size:1.05rem;">
+        <thead><tr>
+            <th style="padding:1rem 1.2rem;">类型</th>
+            <th style="padding:1rem 1.2rem;">绿证</th>
+            <th style="padding:1rem 1.2rem;">份额</th>
+            <th style="padding:1rem 1.2rem;">已成交</th>
+            <th style="padding:1rem 1.2rem;">单价</th>
+            <th style="padding:1rem 1.2rem;">状态</th>
+            <th style="padding:1rem 1.2rem;">创建时间</th>
+            <th style="padding:1rem 1.2rem;">操作</th>
+        </tr></thead>
+        <tbody>
+        {% for o in my_orders %}
+        <tr>
+            <td style="padding:1rem 1.2rem;">{% if o.order_type == 'buy' %}<span class="badge badge-green">买入</span>{% else %}<span class="badge badge-red">卖出</span>{% endif %}</td>
+            <td style="padding:1rem 1.2rem;">{{ o.certificate.cert_id|truncatechars:20 }}</td>
+            <td style="padding:1rem 1.2rem;">{{ o.shares }}</td>
+            <td style="padding:1rem 1.2rem;">{{ o.filled_shares }}</td>
+            <td style="padding:1rem 1.2rem;">{{ o.price_per_share }}</td>
+            <td style="padding:1rem 1.2rem;"><span class="badge badge-blue">{{ o.get_status_display }}</span></td>
+            <td style="padding:1rem 1.2rem;">{{ o.created_at|date:"m-d H:i" }}</td>
+            <td style="padding:1rem 1.2rem;">
+                {% if o.status == 'pending' or o.status == 'partial' %}
+                <a href="{% url 'trading:cancel_order' o.pk %}" class="btn btn-danger btn-sm" onclick="return confirm('确定取消？')">取消</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8" style="padding:2rem;text-align:center;color:#888;font-size:1.1rem;">暂无挂单</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+{% endblock %}

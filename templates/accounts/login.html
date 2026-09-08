@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - 绿证共享交易系统</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Microsoft YaHei", sans-serif; }
+        .login-page {
+            min-height: 100vh; display: flex;
+            background: linear-gradient(135deg, #1a6b3a 0%, #2d8a4e 40%, #3da862 100%);
+        }
+        .login-left {
+            flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 4rem 3rem; color: #fff;
+        }
+        .login-left .logo { font-size: 5rem; margin-bottom: 1.5rem; filter: drop-shadow(0 4px 12px rgba(0,0,0,.3)); }
+        .login-left h1 { font-size: 2.4rem; font-weight: 700; margin-bottom: 1rem; text-align: center; text-shadow: 0 3px 12px rgba(0,0,0,.3); }
+        .login-left p { font-size: 1.2rem; line-height: 2; opacity: .9; text-align: center; max-width: 420px; text-shadow: 0 2px 6px rgba(0,0,0,.25); }
+        .login-left .features { margin-top: 2.5rem; display: flex; flex-wrap: wrap; gap: .8rem; justify-content: center; max-width: 500px; }
+        .login-left .features span {
+            background: rgba(255,255,255,.18); padding: .5rem 1.2rem; border-radius: 20px;
+            font-size: .95rem; backdrop-filter: blur(4px); text-shadow: 0 1px 4px rgba(0,0,0,.2);
+        }
+        .login-right {
+            width: 520px; min-width: 420px; display: flex; align-items: center; justify-content: center;
+            background: #fff; padding: 4rem 3rem;
+        }
+        .login-card { width: 100%; max-width: 400px; }
+        .login-card h2 { font-size: 1.6rem; color: #2d8a4e; margin-bottom: .5rem; text-shadow: 0 1px 3px rgba(45,138,78,.2); }
+        .login-card .subtitle { color: #999; font-size: 1rem; margin-bottom: 2.5rem; }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; font-weight: 600; color: #555; font-size: 1.05rem; margin-bottom: .5rem; }
+        .form-group input {
+            width: 100%; padding: 1rem 1.2rem; border: 1.5px solid #d0d7de; border-radius: 10px;
+            font-size: 1.1rem; transition: border-color .2s, box-shadow .2s; background: #fafbfc;
+        }
+        .form-group input:focus { outline: none; border-color: #2d8a4e; box-shadow: 0 0 0 3px rgba(45,138,78,.12); background: #fff; }
+        .btn-login {
+            width: 100%; padding: 1rem; border: none; border-radius: 10px; cursor: pointer;
+            font-size: 1.15rem; font-weight: 600; letter-spacing: .15em;
+            background: linear-gradient(135deg, #2d8a4e, #1a6b3a); color: #fff;
+            transition: opacity .2s, transform .1s;
+        }
+        .btn-login:hover { opacity: .92; }
+        .btn-login:active { transform: scale(.98); }
+        .register-link { text-align: center; margin-top: 1.8rem; color: #666; font-size: 1.05rem; }
+        .register-link a { color: #2d8a4e; font-weight: 500; text-decoration: none; }
+        .register-link a:hover { text-decoration: underline; }
+        .alert { padding: .8rem 1rem; border-radius: 8px; margin-bottom: 1.2rem; font-size: 1rem; }
+        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        @media (max-width: 900px) {
+            .login-page { flex-direction: column; }
+            .login-left { padding: 3rem 2rem 2rem; }
+            .login-left h1 { font-size: 1.8rem; }
+            .login-right { width: 100%; min-width: unset; padding: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-page">
+        <div class="login-left">
+            <div class="logo">&#127807;</div>
+            <h1>社区绿证共享交易系统</h1>
+            <p>基于区块链的社区分布式光伏绿色电力证书共享交易平台，助力"双碳"目标在社区落地</p>
+            <div class="features">
+                <span>光伏数据采集</span>
+                <span>绿证碎片化拆分</span>
+                <span>按面积公平分配</span>
+                <span>智能撮合交易</span>
+                <span>区块链存证</span>
+                <span>环保可视化</span>
+            </div>
+        </div>
+        <div class="login-right">
+            <div class="login-card">
+                <h2>欢迎回来</h2>
+                <p class="subtitle">请登录您的账号</p>
+                {% if messages %}
+                {% for msg in messages %}
+                <div class="alert alert-{{ msg.tags }}">{{ msg }}</div>
+                {% endfor %}
+                {% endif %}
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label>用户名</label>
+                        <input type="text" name="username" required placeholder="请输入用户名">
+                    </div>
+                    <div class="form-group">
+                        <label>密码</label>
+                        <input type="password" name="password" required placeholder="请输入密码">
+                    </div>
+                    <button type="submit" class="btn-login">登 录</button>
+                </form>
+                <p class="register-link">还没有账号？<a href="{% url 'accounts:register' %}">立即注册</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

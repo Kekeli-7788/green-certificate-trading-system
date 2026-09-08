@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}个人环保统计{% endblock %}
+{% block content %}
+<div class="stat-grid">
+    <div class="stat-card">
+        <div class="num">{{ total_kwh }}</div>
+        <div class="label">持有绿证份额(kWh)</div>
+    </div>
+    <div class="stat-card">
+        <div class="num">{{ co2_kg|floatformat:1 }}kg</div>
+        <div class="label">累计减排CO₂</div>
+    </div>
+    <div class="stat-card">
+        <div class="num">{{ trees }}</div>
+        <div class="label">等效种树(棵)</div>
+    </div>
+    <div class="stat-card">
+        <div class="num">{{ profit|floatformat:0 }}</div>
+        <div class="label">交易盈亏(积分)</div>
+    </div>
+</div>
+
+<div class="grid-2">
+    <div class="card" style="padding:2.2rem;">
+        <h2 style="font-size:1.5rem;">绿证持有趋势</h2>
+        <div class="chart-box">
+            <canvas id="holdChart"></canvas>
+        </div>
+    </div>
+    <div class="card" style="padding:2.2rem;">
+        <h2 style="font-size:1.5rem;">交易统计</h2>
+        <table style="font-size:1.05rem;">
+            <tr><th style="padding:1rem 1.2rem;">累计买入支出</th><td style="padding:1rem 1.2rem;">{{ buy_cost|floatformat:0 }} 积分</td></tr>
+            <tr><th style="padding:1rem 1.2rem;">累计卖出收入</th><td style="padding:1rem 1.2rem;">{{ sell_income|floatformat:0 }} 积分</td></tr>
+            <tr><th style="padding:1rem 1.2rem;">净盈亏</th><td style="padding:1rem 1.2rem;{% if profit >= 0 %}color:#2d8a4e{% else %}color:#d9534f{% endif %};font-weight:600;">{{ profit|floatformat:0 }} 积分</td></tr>
+        </table>
+        <div style="margin-top:1.5rem;padding:1.5rem;background:linear-gradient(135deg,#f0f5f0,#e8f5e9);border-radius:12px;">
+            <p style="font-size:.95rem;color:#555;">您的环保贡献相当于：</p>
+            <p style="font-size:1.8rem;color:#2d8a4e;font-weight:bold;margin:.5rem 0;">种植了 {{ trees }} 棵树</p>
+            <p style="font-size:.85rem;color:#888;">（按每棵树年均吸收18.3kg CO₂计算）</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script>
+const months = {{ months_json|safe }};
+new Chart(document.getElementById('holdChart'), {
+    type: 'line',
+    data: {
+        labels: months.map(m => m.label),
+        datasets: [{
+            label: '持有份额(kWh)',
+            data: months.map(m => m.value),
+            borderColor: '#2d8a4e',
+            backgroundColor: 'rgba(45,138,78,0.1)',
+            fill: true, tension: 0.3,
+        }]
+    },
+    options: { responsive: true, maintainAspectRatio: false }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}议价{% endblock %}
+{% block content %}
+<div style="max-width:860px;margin:0 auto;width:100%;">
+    <div class="card" style="padding:2.5rem;">
+        <h2 style="font-size:1.6rem;margin-bottom:1.5rem;">议价协商</h2>
+        <div style="overflow-x:auto;">
+        <table style="font-size:1.05rem;">
+            <tr><th style="width:140px;padding:1rem 1.2rem;">挂单用户</th><td style="padding:1rem 1.2rem;">{{ order.user.username }}</td></tr>
+            <tr><th style="padding:1rem 1.2rem;">类型</th><td style="padding:1rem 1.2rem;">{{ order.get_order_type_display }}</td></tr>
+            <tr><th style="padding:1rem 1.2rem;">绿证</th><td style="padding:1rem 1.2rem;">{{ order.certificate.cert_id }}</td></tr>
+            <tr><th style="padding:1rem 1.2rem;">剩余份额</th><td style="padding:1rem 1.2rem;">{{ order.remaining }}</td></tr>
+            <tr><th style="padding:1rem 1.2rem;">挂单单价</th><td style="padding:1rem 1.2rem;"><b style="color:#2d8a4e;">{{ order.price_per_share }}</b> 积分/份</td></tr>
+        </table>
+        </div>
+    </div>
+    <div class="card" style="padding:2.5rem;">
+        <h2 style="font-size:1.6rem;margin-bottom:1.5rem;">发送议价</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>建议单价(积分/份)</label>
+                <input type="number" name="proposed_price" step="0.1" required>
+            </div>
+            <div class="form-group">
+                <label>留言</label>
+                <textarea name="message" rows="3" placeholder="请输入议价理由..." style="resize:vertical;"></textarea>
+            </div>
+            <div style="display:flex;gap:1rem;margin-top:1.5rem;">
+                <button type="submit" class="btn btn-primary" style="padding:.75rem 2rem;font-size:1.05rem;">发送议价</button>
+                <a href="{% url 'trading:order_list' %}" class="btn btn-outline" style="padding:.75rem 2rem;font-size:1.05rem;">返回</a>
+            </div>
+        </form>
+    </div>
+    {% if negotiations %}
+    <div class="card" style="padding:2.5rem;">
+        <h2 style="font-size:1.6rem;margin-bottom:1.5rem;">议价记录</h2>
+        <div style="overflow-x:auto;">
+        <table style="font-size:1.05rem;">
+            <thead><tr>
+                <th style="padding:1rem 1.2rem;">发送人</th>
+                <th style="padding:1rem 1.2rem;">建议价格</th>
+                <th style="padding:1rem 1.2rem;">留言</th>
+                <th style="padding:1rem 1.2rem;">时间</th>
+            </tr></thead>
+            <tbody>
+            {% for n in negotiations %}
+            <tr>
+                <td style="padding:1rem 1.2rem;">{{ n.sender.username }}</td>
+                <td style="padding:1rem 1.2rem;">{{ n.proposed_price }}</td>
+                <td style="padding:1rem 1.2rem;">{{ n.message }}</td>
+                <td style="padding:1rem 1.2rem;">{{ n.created_at|date:"m-d H:i" }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

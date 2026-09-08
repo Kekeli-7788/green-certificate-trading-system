@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}发布挂单{% endblock %}
+{% block content %}
+<div style="max-width:860px;margin:0 auto;width:100%;">
+    <div class="card" style="padding:2.5rem;">
+        <h2 style="font-size:1.6rem;margin-bottom:1.8rem;">发布交易挂单</h2>
+        <div style="margin-bottom:1.5rem;padding:.8rem 1.2rem;background:#f0f5f0;border-radius:8px;">
+            <p style="font-size:1.05rem;color:#555;">当前积分：<b style="color:#2d8a4e;">{{ user.profile.points }}</b></p>
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>交易类型</label>
+                <select name="order_type" required>
+                    <option value="buy">买入</option>
+                    <option value="sell">卖出</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>选择绿证</label>
+                <select name="certificate" required>
+                    {% for c in certs %}
+                    <option value="{{ c.pk }}">{{ c.cert_id }} ({{ c.device }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>份额数量</label>
+                <input type="number" name="shares" required min="1">
+            </div>
+            <div class="form-group">
+                <label>单价(积分/份)</label>
+                <input type="number" name="price" step="0.1" required min="0.1">
+            </div>
+            <div class="form-group">
+                <label>挂单有效天数</label>
+                <input type="number" name="valid_days" value="7" min="1" max="30">
+            </div>
+            <div style="margin-top:1.2rem;padding:1rem 1.2rem;background:#fff8e1;border-radius:8px;margin-bottom:1.5rem;">
+                <p style="font-size:.95rem;color:#856404;line-height:1.8;">买入时积分将被冻结，卖出时份额将被冻结。系统按"价格优先、时间优先"自动撮合。</p>
+            </div>
+            <div style="display:flex;gap:1rem;margin-top:1.5rem;">
+                <button type="submit" class="btn btn-primary" style="padding:.75rem 2rem;font-size:1.05rem;">提交挂单</button>
+                <a href="{% url 'trading:order_list' %}" class="btn btn-outline" style="padding:.75rem 2rem;font-size:1.05rem;">返回</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

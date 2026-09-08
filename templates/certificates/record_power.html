@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}录入发电量{% endblock %}
+{% block content %}
+<div style="max-width:860px;margin:0 auto;width:100%;">
+    <div class="card" style="padding:2.5rem;">
+        <h2 style="font-size:1.6rem;margin-bottom:1.8rem;">录入光伏发电量</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>选择设备</label>
+                <select name="device" required>
+                    <option value="">请选择</option>
+                    {% for d in devices %}
+                    <option value="{{ d.pk }}">{{ d.building }} - {{ d.name }} (容量{{ d.capacity_kw }}kW)</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>发电日期</label>
+                <input type="date" name="date" required>
+            </div>
+            <div class="form-group">
+                <label>发电量(kWh)</label>
+                <input type="number" name="kwh" step="0.1" required min="0.1">
+            </div>
+            <div style="margin-top:1.2rem;padding:1rem 1.2rem;background:#f0f5f0;border-radius:8px;margin-bottom:1.5rem;">
+                <p style="font-size:.95rem;color:#555;line-height:1.8;">系统将自动校验：发电量 ≤ 装机容量 × 日均日照时长(5h)。累计每1000kWh(1MWh)自动生成1张标准绿证。</p>
+            </div>
+            <div style="display:flex;gap:1rem;margin-top:1.5rem;">
+                <button type="submit" class="btn btn-primary" style="padding:.75rem 2rem;font-size:1.05rem;">提交录入</button>
+                <a href="{% url 'certificates:device_list' %}" class="btn btn-outline" style="padding:.75rem 2rem;font-size:1.05rem;">返回</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

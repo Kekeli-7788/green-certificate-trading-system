@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}系统配置{% endblock %}
+{% block content %}
+<div class="card" style="padding:2.5rem;">
+    <h2 style="font-size:1.6rem;margin-bottom:1.5rem;">系统参数配置</h2>
+    <p style="color:#888;margin-bottom:1.5rem;">修改系统运行参数，调整后立即生效。请谨慎操作。</p>
+
+    {% if messages %}
+    {% for msg in messages %}
+    <div class="alert alert-{{ msg.tags }}">{{ msg }}</div>
+    {% endfor %}
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <table style="font-size:1.05rem;">
+            <thead><tr>
+                <th style="padding:1rem 1.2rem;">参数名</th>
+                <th style="padding:1rem 1.2rem;">说明</th>
+                <th style="padding:1rem 1.2rem;">当前值</th>
+                <th style="padding:1rem 1.2rem;">修改</th>
+            </tr></thead>
+            <tbody>
+            {% for config in configs %}
+            <tr>
+                <td style="padding:1rem 1.2rem;font-weight:600;font-family:monospace;">{{ config.key }}</td>
+                <td style="padding:1rem 1.2rem;color:#666;">{{ config.description }}</td>
+                <td style="padding:1rem 1.2rem;font-weight:600;color:#2d8a4e;">{{ config.value }}</td>
+                <td style="padding:1rem 1.2rem;">
+                    <input type="number" step="any" name="config_{{ config.key }}"
+                           value="{{ config.value }}"
+                           style="width:120px;padding:.5rem .8rem;border:1.5px solid #d0d7de;border-radius:6px;font-size:1rem;">
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <div style="margin-top:1.5rem;">
+            <button type="submit" class="btn btn-primary">保存配置</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

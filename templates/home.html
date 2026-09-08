@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}首页 - 绿证共享交易系统{% endblock %}
+{% block content %}
+<div class="card" style="padding:2.5rem;">
+    <h2 style="font-size:1.7rem;margin-bottom:1.5rem;">欢迎使用社区绿证共享交易系统</h2>
+    <p style="color:#666;margin-bottom:2rem;font-size:1.15rem;line-height:1.8;">基于区块链的社区分布式光伏绿色电力证书共享交易平台，助力"双碳"目标在社区落地。</p>
+    <div class="stat-grid" style="grid-template-columns: repeat({% if role == 'admin' %}3{% elif role == 'property' %}3{% else %}5{% endif %}, 1fr);">
+        <div class="stat-card">
+            <div class="num">&#127774;</div>
+            <div class="label">光伏数据采集与绿证生成</div>
+            <a href="{% url 'certificates:device_list' %}" class="btn btn-outline btn-sm" style="margin-top:.6rem;">查看设备</a>
+        </div>
+        <div class="stat-card">
+            <div class="num">&#128196;</div>
+            <div class="label">绿证拆分与持有管理</div>
+            <a href="{% url 'certificates:my_shares' %}" class="btn btn-outline btn-sm" style="margin-top:.6rem;">我的绿证</a>
+        </div>
+        <div class="stat-card">
+            <div class="num">&#128176;</div>
+            <div class="label">交易撮合与议价</div>
+            <a href="{% url 'trading:order_list' %}" class="btn btn-outline btn-sm" style="margin-top:.6rem;">进入市场</a>
+        </div>
+        <div class="stat-card">
+            <div class="num">&#128279;</div>
+            <div class="label">区块链存证与信任保障</div>
+            <a href="{% url 'blockchain:block_list' %}" class="btn btn-outline btn-sm" style="margin-top:.6rem;">查看链上</a>
+        </div>
+        <div class="stat-card">
+            <div class="num">&#128200;</div>
+            <div class="label">统计与可视化</div>
+            <a href="{% url 'stats:personal' %}" class="btn btn-outline btn-sm" style="margin-top:.6rem;">个人统计</a>
+        </div>
+        {% if role == 'property' or role == 'admin' %}
+        <div class="stat-card">
+            <div class="num">&#128736;</div>
+            <div class="label">管理功能</div>
+            {% if role == 'property' %}
+            <a href="{% url 'certificates:record_power' %}" class="btn btn-outline btn-sm" style="margin-top:.6rem;">录入发电</a>
+            <a href="{% url 'certificates:device_list' %}" class="btn btn-outline btn-sm" style="margin-top:.4rem;">设备管理</a>
+            <a href="{% url 'accounts:verify' %}" class="btn btn-outline btn-sm" style="margin-top:.4rem;">审核居民</a>
+            {% else %}
+            <a href="{% url 'stats:community' %}" class="btn btn-outline btn-sm" style="margin-top:.6rem;">社区统计</a>
+            <a href="{% url 'trading:manage_orders' %}" class="btn btn-outline btn-sm" style="margin-top:.4rem;">交易管理</a>
+            <a href="{% url 'blockchain:block_list' %}" class="btn btn-outline btn-sm" style="margin-top:.4rem;">链验证</a>
+            <a href="{% url 'stats:system_config' %}" class="btn btn-outline btn-sm" style="margin-top:.4rem;">系统配置</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card" style="padding:2.5rem;">
+    <h2 style="font-size:1.5rem;">系统说明</h2>
+    <ul style="line-height:2.4;color:#555;padding-left:1.5rem;font-size:1.1rem;">
+        <li><b>绿证碎片化拆分</b>：1张标准绿证(1MWh) = 1000份小额份额(1kWh/份)，降低参与门槛</li>
+        <li><b>按面积分配</b>：绿证初始份额按居民居住面积比例公平分配</li>
+        <li><b>智能撮合</b>：按"价格优先、时间优先"原则自动匹配买卖挂单</li>
+        <li><b>虚拟积分</b>：使用虚拟积分交易，无需绑定银行卡，简化流程</li>
+        <li><b>区块链存证</b>：绿证生成与交易记录上链，不可篡改，保障信任</li>
+        <li><b>环保可视化</b>：1kWh光伏发电 ≈ 减排0.8kg CO₂ ≈ 种树0.044棵</li>
+    </ul>
+</div>
+{% endblock %}

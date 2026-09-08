@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}个人中心{% endblock %}
+{% block content %}
+<div style="max-width:860px;margin:0 auto;width:100%;">
+    <div class="card" style="padding:2.5rem;">
+        <h2 style="font-size:1.6rem;margin-bottom:1.8rem;">个人中心</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>用户名</label>
+                <input type="text" value="{{ user.username }}" disabled>
+            </div>
+            <div class="form-group">
+                <label>角色</label>
+                <input type="text" value="{{ profile.get_role_display }}" disabled>
+            </div>
+            <div class="form-group">
+                <label>居住单元号</label>
+                <input type="text" value="{{ profile.unit_number }}" disabled>
+            </div>
+            <div class="form-group">
+                <label>手机号</label>
+                <input type="text" name="phone" value="{{ profile.phone }}">
+            </div>
+            <div class="form-group">
+                <label>居住面积(㎡)</label>
+                <input type="number" name="area" step="0.1" value="{{ profile.area }}">
+            </div>
+            <div class="form-group">
+                <label>虚拟积分</label>
+                <input type="text" value="{{ profile.points }}" disabled>
+            </div>
+            <div class="form-group">
+                <label>审核状态</label>
+                <input type="text" value="{% if profile.is_verified %}已审核{% else %}待审核{% endif %}" disabled>
+            </div>
+            <div style="margin-top:1.8rem;">
+                <button type="submit" class="btn btn-primary" style="padding:.75rem 2rem;font-size:1.05rem;">保存修改</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}区块链浏览器{% endblock %}
+{% block content %}
+<div class="card" style="padding:2.5rem;">
+    <h2 style="font-size:1.6rem;margin-bottom:1.5rem;">区块链浏览器（简化版联盟链）</h2>
+    <p style="margin-bottom:1.5rem;font-size:1.1rem;">
+        链状态：{% if chain_valid %}<span class="badge badge-green">完整有效</span>{% else %}<span class="badge badge-red">数据异常</span>{% endif %}
+        &nbsp; 共 <b>{{ blocks|length }}</b> 个区块
+        &nbsp; <a href="{% url 'blockchain:verify_chain' %}" class="btn btn-outline btn-sm" onclick="return confirm('确认验证区块链完整性？')">验证区块链</a>
+    </p>
+    <div style="overflow-x:auto;">
+    <table style="font-size:1.05rem;">
+        <thead><tr>
+            <th style="padding:1rem 1.2rem;">区块#</th>
+            <th style="padding:1rem 1.2rem;">区块哈希</th>
+            <th style="padding:1rem 1.2rem;">前一哈希</th>
+            <th style="padding:1rem 1.2rem;">数据类型</th>
+            <th style="padding:1rem 1.2rem;">创建时间</th>
+            <th style="padding:1rem 1.2rem;">操作</th>
+        </tr></thead>
+        <tbody>
+        {% for b in blocks %}
+        <tr>
+            <td style="padding:1rem 1.2rem;">{{ b.index }}</td>
+            <td style="font-family:monospace;font-size:.9rem;padding:1rem 1.2rem;">{{ b.hash|truncatechars:24 }}</td>
+            <td style="font-family:monospace;font-size:.9rem;padding:1rem 1.2rem;">{{ b.previous_hash|truncatechars:24 }}</td>
+            <td style="padding:1rem 1.2rem;"><span class="badge badge-blue">{{ b.data.type }}</span></td>
+            <td style="padding:1rem 1.2rem;">{{ b.created_at|date:"Y-m-d H:i:s" }}</td>
+            <td style="padding:1rem 1.2rem;"><a href="{% url 'blockchain:block_detail' b.index %}" class="btn btn-outline btn-sm">详情</a></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" style="padding:2rem;text-align:center;color:#888;font-size:1.1rem;">暂无区块数据</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+{% endblock %}

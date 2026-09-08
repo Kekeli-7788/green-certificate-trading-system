@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}成交记录{% endblock %}
+{% block content %}
+<div class="card" style="padding:2.5rem;">
+    <h2 style="font-size:1.6rem;margin-bottom:1.5rem;">我的成交记录</h2>
+    <div style="overflow-x:auto;">
+    <table style="font-size:1.05rem;">
+        <thead><tr>
+            <th style="padding:1rem 1.2rem;">时间</th>
+            <th style="padding:1rem 1.2rem;">绿证</th>
+            <th style="padding:1rem 1.2rem;">买方</th>
+            <th style="padding:1rem 1.2rem;">卖方</th>
+            <th style="padding:1rem 1.2rem;">份额</th>
+            <th style="padding:1rem 1.2rem;">单价</th>
+            <th style="padding:1rem 1.2rem;">总价</th>
+            <th style="padding:1rem 1.2rem;">区块哈希</th>
+        </tr></thead>
+        <tbody>
+        {% for t in trades %}
+        <tr>
+            <td style="padding:1rem 1.2rem;">{{ t.created_at|date:"Y-m-d H:i" }}</td>
+            <td style="padding:1rem 1.2rem;">{{ t.certificate.cert_id|truncatechars:20 }}</td>
+            <td style="padding:1rem 1.2rem;">{% if t.buyer == user %}<b style="color:#2d8a4e;">我(买)</b>{% else %}{{ t.buyer.username }}{% endif %}</td>
+            <td style="padding:1rem 1.2rem;">{% if t.seller == user %}<b style="color:#d9534f;">我(卖)</b>{% else %}{{ t.seller.username }}{% endif %}</td>
+            <td style="padding:1rem 1.2rem;">{{ t.shares }}</td>
+            <td style="padding:1rem 1.2rem;">{{ t.price_per_share }}</td>
+            <td style="padding:1rem 1.2rem;">{{ t.total_price }}</td>
+            <td style="padding:1rem 1.2rem;"><a href="{% url 'blockchain:block_list' %}" style="color:#2d8a4e;font-size:.9rem;">{{ t.block_hash|truncatechars:16 }}</a></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8" style="padding:2rem;text-align:center;color:#888;font-size:1.1rem;">暂无成交记录</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+{% endblock %}

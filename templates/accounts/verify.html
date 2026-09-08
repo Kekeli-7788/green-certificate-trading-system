@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}居民审核{% endblock %}
+{% block content %}
+<div class="card" style="padding:2.5rem;">
+    <h2 style="font-size:1.6rem;margin-bottom:1.5rem;">待审核居民列表</h2>
+    {% if pending %}
+    <div style="overflow-x:auto;">
+    <table style="font-size:1.05rem;">
+        <thead><tr>
+            <th style="padding:1rem 1.2rem;">用户名</th>
+            <th style="padding:1rem 1.2rem;">单元号</th>
+            <th style="padding:1rem 1.2rem;">手机号</th>
+            <th style="padding:1rem 1.2rem;">面积(㎡)</th>
+            <th style="padding:1rem 1.2rem;">注册时间</th>
+            <th style="padding:1rem 1.2rem;">操作</th>
+        </tr></thead>
+        <tbody>
+        {% for p in pending %}
+        <tr>
+            <td style="padding:1rem 1.2rem;">{{ p.user.username }}</td>
+            <td style="padding:1rem 1.2rem;">{{ p.unit_number }}</td>
+            <td style="padding:1rem 1.2rem;">{{ p.phone }}</td>
+            <td style="padding:1rem 1.2rem;">{{ p.area }}</td>
+            <td style="padding:1rem 1.2rem;">{{ p.created_at|date:"Y-m-d H:i" }}</td>
+            <td style="padding:1rem 1.2rem;">
+                <form method="post" style="display:inline;gap:.5rem;">
+                    {% csrf_token %}
+                    <input type="hidden" name="user_id" value="{{ p.user.id }}">
+                    <button type="submit" name="action" value="approve" class="btn btn-primary btn-sm" style="margin-right:.5rem;">通过</button>
+                    <button type="submit" name="action" value="reject" class="btn btn-danger btn-sm">拒绝</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    {% else %}
+    <p style="color:#888;font-size:1.1rem;padding:2rem 0;text-align:center;">暂无待审核居民</p>
+    {% endif %}
+</div>
+{% endblock %}

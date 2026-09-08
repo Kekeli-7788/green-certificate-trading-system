@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}我的绿证份额{% endblock %}
+{% block content %}
+<div class="stat-grid">
+    <div class="stat-card">
+        <div class="num">{{ total_kwh }}</div>
+        <div class="label">持有总份额(kWh)</div>
+    </div>
+    <div class="stat-card">
+        <div class="num">{{ co2_saved|floatformat:1 }}kg</div>
+        <div class="label">累计减排CO₂</div>
+    </div>
+</div>
+<div class="card" style="padding:2.5rem;">
+    <h2 style="font-size:1.6rem;margin-bottom:1.5rem;">我的绿证份额明细</h2>
+    <div style="overflow-x:auto;">
+    <table style="font-size:1.05rem;">
+        <thead><tr>
+            <th style="padding:1rem 1.2rem;">绿证编号</th>
+            <th style="padding:1rem 1.2rem;">份额数量</th>
+            <th style="padding:1rem 1.2rem;">对应发电量(kWh)</th>
+            <th style="padding:1rem 1.2rem;">来源</th>
+            <th style="padding:1rem 1.2rem;">状态</th>
+            <th style="padding:1rem 1.2rem;">获取时间</th>
+            <th style="padding:1rem 1.2rem;">操作</th>
+        </tr></thead>
+        <tbody>
+        {% for s in shares %}
+        <tr>
+            <td style="padding:1rem 1.2rem;"><a href="{% url 'certificates:cert_detail' s.certificate.cert_id %}" style="color:#2d8a4e;font-weight:500;">{{ s.certificate.cert_id }}</a></td>
+            <td style="padding:1rem 1.2rem;">{{ s.amount }}</td>
+            <td style="padding:1rem 1.2rem;">{{ s.kwh_value }}</td>
+            <td style="padding:1rem 1.2rem;">{{ s.get_source_display }}</td>
+            <td style="padding:1rem 1.2rem;">
+                {% if s.is_frozen %}<span class="badge badge-yellow">冻结中</span>
+                {% elif s.is_valid %}<span class="badge badge-green">有效</span>
+                {% else %}<span class="badge badge-red">已过期</span>{% endif %}
+            </td>
+            <td style="padding:1rem 1.2rem;">{{ s.acquired_at|date:"Y-m-d H:i" }}</td>
+            <td style="padding:1rem 1.2rem;"><a href="{% url 'certificates:cert_detail' s.certificate.cert_id %}" class="btn btn-outline btn-sm">详情</a></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" style="padding:2rem;text-align:center;color:#888;font-size:1.1rem;">暂无绿证份额，等待管理员录入发电数据后系统将自动分配</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+{% endblock %}

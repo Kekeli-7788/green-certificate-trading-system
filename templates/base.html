@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}绿证共享交易系统{% endblock %}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Microsoft YaHei", sans-serif; background: #f0f5f0; color: #333; }
+        .navbar { background: linear-gradient(135deg, #2d8a4e, #1a6b3a); padding: 0 2.5rem; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
+        .navbar .brand { color: #fff; font-size: 1.3rem; font-weight: bold; padding: 1rem 0; text-decoration: none; white-space: nowrap; }
+        .navbar .nav-links { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
+        .navbar .nav-links a { color: rgba(255,255,255,.9); text-decoration: none; padding: .5rem .8rem; border-radius: 6px; font-size: .95rem; transition: background .2s; }
+        .navbar .nav-links a:hover { background: rgba(255,255,255,.15); }
+        .navbar .user-info { color: rgba(255,255,255,.8); font-size: .9rem; }
+        .container { max-width: 1600px; margin: 2rem auto; padding: 0 2.5rem; }
+        .card { background: #fff; border-radius: 14px; padding: 2.2rem; margin-bottom: 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,.07); }
+        .card h2 { color: #2d8a4e; margin-bottom: 1.4rem; font-size: 1.5rem; border-left: 4px solid #2d8a4e; padding-left: .8rem; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: .9rem 1.1rem; text-align: left; border-bottom: 1px solid #eee; font-size: 1.05rem; }
+        th { background: #f8faf8; color: #555; font-weight: 600; font-size: 1rem; }
+        tr:hover { background: #f5faf5; }
+        .btn { display: inline-block; padding: .7rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; text-decoration: none; transition: all .2s; font-weight: 500; }
+        .btn-primary { background: #2d8a4e; color: #fff; }
+        .btn-primary:hover { background: #246e3f; }
+        .btn-danger { background: #d9534f; color: #fff; }
+        .btn-danger:hover { background: #c9302c; }
+        .btn-sm { padding: .4rem .8rem; font-size: .85rem; }
+        .btn-outline { background: transparent; border: 1px solid #2d8a4e; color: #2d8a4e; }
+        .btn-outline:hover { background: #2d8a4e; color: #fff; }
+        .form-group { margin-bottom: 1.2rem; }
+        .form-group label { display: block; margin-bottom: .5rem; font-weight: 600; color: #555; font-size: 1.05rem; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: .75rem 1rem; border: 1.5px solid #d0d7de; border-radius: 8px; font-size: 1.05rem; transition: border-color .2s, box-shadow .2s; background: #fafbfc; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #2d8a4e; box-shadow: 0 0 0 3px rgba(45,138,78,.12); background: #fff; }
+        .alert { padding: .8rem 1rem; border-radius: 6px; margin-bottom: 1rem; font-size: 1rem; }
+        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .badge { display: inline-block; padding: .3rem .7rem; border-radius: 10px; font-size: .9rem; font-weight: 600; }
+        .badge-green { background: #d4edda; color: #155724; }
+        .badge-red { background: #f8d7da; color: #721c24; }
+        .badge-yellow { background: #fff3cd; color: #856404; }
+        .badge-blue { background: #d1ecf1; color: #0c5460; }
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; margin-bottom: 2rem; }
+        .stat-card { background: #fff; border-radius: 14px; padding: 2rem 1.5rem; text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,.07); transition: transform .2s; }
+        .stat-card:hover { transform: translateY(-3px); }
+        .stat-card .num { font-size: 2.4rem; font-weight: bold; color: #2d8a4e; }
+        .stat-card .label { font-size: 1.05rem; color: #777; margin-top: .5rem; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } .stat-grid { grid-template-columns: repeat(2, 1fr) !important; } }
+        .chart-box { height: 380px; position: relative; }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="brand">&#127807; 社区绿证共享交易系统</a>
+        {% if user.is_authenticated %}
+        <div class="nav-links">
+            <a href="/">首页</a>
+            <a href="{% url 'certificates:device_list' %}">光伏设备</a>
+            <a href="{% url 'certificates:my_shares' %}">我的绿证</a>
+            <a href="{% url 'trading:order_list' %}">交易市场</a>
+            <a href="{% url 'trading:trade_history' %}">交易记录</a>
+            <a href="{% url 'blockchain:block_list' %}">区块链</a>
+            <a href="{% url 'stats:personal' %}">我的统计</a>
+            {% if user.profile.role == 'admin' %}
+            <a href="{% url 'stats:community' %}">社区统计</a>
+            <a href="{% url 'trading:manage_orders' %}">交易管理</a>
+            <a href="{% url 'stats:system_config' %}">系统配置</a>
+            {% endif %}
+            {% if user.profile.role == 'property' or user.profile.role == 'admin' %}
+            <a href="{% url 'accounts:verify' %}">审核管理</a>
+            {% endif %}
+            <span class="user-info">{{ user.username }} ({{ user.profile.get_role_display }}) | 积分: {{ user.profile.points }}</span>
+            <a href="{% url 'accounts:profile' %}">个人中心</a>
+            <a href="{% url 'accounts:logout' %}">退出</a>
+        </div>
+        {% endif %}
+    </nav>
+    <div class="container">
+        {% if messages %}
+        {% for msg in messages %}
+        <div class="alert alert-{{ msg.tags }}">{{ msg }}</div>
+        {% endfor %}
+        {% endif %}
+        {% block content %}{% endblock %}
+    </div>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

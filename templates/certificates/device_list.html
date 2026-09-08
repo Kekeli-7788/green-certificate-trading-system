@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}光伏设备列表{% endblock %}
+{% block content %}
+<div class="card" style="padding:2.5rem;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+        <h2 style="margin-bottom:0;font-size:1.6rem;">光伏设备列表</h2>
+        {% if user.profile.role == 'property' or user.profile.role == 'admin' %}
+        <div style="display:flex;gap:.8rem;">
+            {% if user.profile.role == 'property' %}
+            <a href="{% url 'certificates:record_power' %}" class="btn btn-outline" style="padding:.6rem 1.4rem;font-size:1rem;">录入发电量</a>
+            {% endif %}
+            <a href="{% url 'certificates:add_device' %}" class="btn btn-primary" style="padding:.6rem 1.4rem;font-size:1rem;">+ 添加设备</a>
+        </div>
+        {% endif %}
+    </div>
+    <div style="overflow-x:auto;">
+    <table style="font-size:1.05rem;">
+        <thead><tr>
+            <th style="padding:1rem 1.2rem;font-size:1.05rem;">设备名称</th>
+            <th style="padding:1rem 1.2rem;font-size:1.05rem;">所属楼栋</th>
+            <th style="padding:1rem 1.2rem;font-size:1.05rem;">装机容量(kW)</th>
+            <th style="padding:1rem 1.2rem;font-size:1.05rem;">运行状态</th>
+            <th style="padding:1rem 1.2rem;font-size:1.05rem;">安装日期</th>
+            <th style="padding:1rem 1.2rem;font-size:1.05rem;">日最大发电(kWh)</th>
+            {% if user.profile.role == 'property' %}
+            <th style="padding:1rem 1.2rem;font-size:1.05rem;">状态操作</th>
+            {% endif %}
+        </tr></thead>
+        <tbody>
+        {% for d in devices %}
+        <tr>
+            <td style="padding:1rem 1.2rem;">{{ d.name }}</td>
+            <td style="padding:1rem 1.2rem;">{{ d.building }}</td>
+            <td style="padding:1rem 1.2rem;">{{ d.capacity_kw }}</td>
+            <td style="padding:1rem 1.2rem;">
+                {% if d.status == 'normal' %}<span class="badge badge-green" style="font-size:.9rem;padding:.3rem .8rem;">正常</span>
+                {% elif d.status == 'fault' %}<span class="badge badge-red" style="font-size:.9rem;padding:.3rem .8rem;">故障</span>
+                {% else %}<span class="badge badge-yellow" style="font-size:.9rem;padding:.3rem .8rem;">维护中</span>{% endif %}
+            </td>
+            <td style="padding:1rem 1.2rem;">{{ d.installed_date }}</td>
+            <td style="padding:1rem 1.2rem;">{{ d.max_daily_kwh }}</td>
+            {% if user.profile.role == 'property' %}
+            <td style="padding:1rem 1.2rem;">
+                <form method="post" action="{% url 'certificates:change_device_status' d.pk %}" style="display:flex;gap:.4rem;flex-wrap:wrap;">
+                    {% csrf_token %}
+                    {% if d.status != 'normal' %}
+                    <button type="submit" name="status" value="normal" class="btn btn-primary btn-sm">恢复正常</button>
+                    {% endif %}
+                    {% if d.status != 'fault' %}
+                    <button type="submit" name="status" value="fault" class="btn btn-danger btn-sm">标记故障</button>
+                    {% endif %}
+                    {% if d.status != 'maintenance' %}
+                    <button type="submit" name="status" value="maintenance" class="btn btn-outline btn-sm">维护中</button>
+                    {% endif %}
+                </form>
+            </td>
+            {% endif %}
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" style="padding:2rem;text-align:center;color:#888;font-size:1.1rem;">暂无设备，请先添加光伏设备</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+{% endblock %}

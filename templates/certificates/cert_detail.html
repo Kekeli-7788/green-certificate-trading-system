@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}绿证详情 {{ cert.cert_id }}{% endblock %}
+{% block content %}
+<div class="card" style="padding:2.5rem;">
+    <h2 style="font-size:1.6rem;margin-bottom:1.5rem;">绿证详情</h2>
+    <div style="overflow-x:auto;">
+    <table style="font-size:1.05rem;">
+        <tr><th style="width:160px;padding:1rem 1.2rem;">绿证编号</th><td style="padding:1rem 1.2rem;">{{ cert.cert_id }}</td></tr>
+        <tr><th style="padding:1rem 1.2rem;">所属设备</th><td style="padding:1rem 1.2rem;">{{ cert.device }}</td></tr>
+        <tr><th style="padding:1rem 1.2rem;">对应发电量</th><td style="padding:1rem 1.2rem;">{{ cert.total_kwh }} kWh ({{ cert.total_kwh|floatformat:0 }} MWh标准绿证)</td></tr>
+        <tr><th style="padding:1rem 1.2rem;">总份额</th><td style="padding:1rem 1.2rem;">{{ cert.total_shares }} 份</td></tr>
+        <tr><th style="padding:1rem 1.2rem;">生成日期</th><td style="padding:1rem 1.2rem;">{{ cert.generated_date }}</td></tr>
+        <tr><th style="padding:1rem 1.2rem;">过期日期</th><td style="padding:1rem 1.2rem;">{{ cert.expire_date }}</td></tr>
+        <tr><th style="padding:1rem 1.2rem;">状态</th><td style="padding:1rem 1.2rem;">
+            {% if cert.status == 'active' %}<span class="badge badge-green">有效</span>
+            {% elif cert.status == 'expired' %}<span class="badge badge-red">已过期</span>
+            {% else %}<span class="badge badge-yellow">{{ cert.get_status_display }}</span>{% endif %}
+        </td></tr>
+    </table>
+    </div>
+</div>
+<div class="card" style="padding:2.5rem;">
+    <h2 style="font-size:1.6rem;margin-bottom:1.5rem;">份额持有分布</h2>
+    <div style="overflow-x:auto;">
+    <table style="font-size:1.05rem;">
+        <thead><tr>
+            <th style="padding:1rem 1.2rem;">持有人</th>
+            <th style="padding:1rem 1.2rem;">份额</th>
+            <th style="padding:1rem 1.2rem;">来源</th>
+            <th style="padding:1rem 1.2rem;">冻结</th>
+            <th style="padding:1rem 1.2rem;">获取时间</th>
+        </tr></thead>
+        <tbody>
+        {% for s in shares %}
+        <tr>
+            <td style="padding:1rem 1.2rem;">{{ s.owner.username }}</td>
+            <td style="padding:1rem 1.2rem;">{{ s.amount }}</td>
+            <td style="padding:1rem 1.2rem;">{{ s.get_source_display }}</td>
+            <td style="padding:1rem 1.2rem;">{% if s.is_frozen %}<span class="badge badge-yellow">是</span>{% else %}否{% endif %}</td>
+            <td style="padding:1rem 1.2rem;">{{ s.acquired_at|date:"Y-m-d H:i" }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+<a href="{% url 'certificates:my_shares' %}" class="btn btn-outline" style="padding:.75rem 2rem;font-size:1.05rem;">返回我的绿证</a>
+{% endblock %}

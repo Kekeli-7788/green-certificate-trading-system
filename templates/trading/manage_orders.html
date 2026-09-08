@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}交易管理{% endblock %}
+{% block content %}
+<div class="card" style="padding:2.5rem;">
+    <h2 style="font-size:1.6rem;margin-bottom:1.5rem;">活跃挂单管理</h2>
+
+    {% if messages %}
+    {% for msg in messages %}
+    <div class="alert alert-{{ msg.tags }}">{{ msg }}</div>
+    {% endfor %}
+    {% endif %}
+
+    {% if pending_orders %}
+    <div style="overflow-x:auto;">
+    <table style="font-size:1.05rem;">
+        <thead><tr>
+            <th style="padding:1rem 1.2rem;">订单号</th>
+            <th style="padding:1rem 1.2rem;">用户</th>
+            <th style="padding:1rem 1.2rem;">类型</th>
+            <th style="padding:1rem 1.2rem;">绿证</th>
+            <th style="padding:1rem 1.2rem;">份额</th>
+            <th style="padding:1rem 1.2rem;">已成交</th>
+            <th style="padding:1rem 1.2rem;">单价</th>
+            <th style="padding:1rem 1.2rem;">状态</th>
+            <th style="padding:1rem 1.2rem;">过期时间</th>
+            <th style="padding:1rem 1.2rem;">操作</th>
+        </tr></thead>
+        <tbody>
+        {% for order in pending_orders %}
+        <tr>
+            <td style="padding:1rem 1.2rem;">#{{ order.pk }}</td>
+            <td style="padding:1rem 1.2rem;">{{ order.user.username }}</td>
+            <td style="padding:1rem 1.2rem;">
+                {% if order.order_type == 'buy' %}
+                <span class="badge badge-green">买入</span>
+                {% else %}
+                <span class="badge badge-red">卖出</span>
+                {% endif %}
+            </td>
+            <td style="padding:1rem 1.2rem;font-size:.9rem;">{{ order.certificate.cert_id }}</td>
+            <td style="padding:1rem 1.2rem;">{{ order.shares }}</td>
+            <td style="padding:1rem 1.2rem;">{{ order.filled_shares }}</td>
+            <td style="padding:1rem 1.2rem;">{{ order.price_per_share }}</td>
+            <td style="padding:1rem 1.2rem;">
+                {% if order.status == 'pending' %}
+                <span class="badge badge-yellow">挂单中</span>
+                {% else %}
+                <span class="badge badge-blue">部分成交</span>
+                {% endif %}
+            </td>
+            <td style="padding:1rem 1.2rem;font-size:.9rem;">{{ order.expire_time|date:"Y-m-d H:i" }}</td>
+            <td style="padding:1rem 1.2rem;">
+                <form method="post" action="{% url 'trading:force_cancel_order' order.pk %}" style="display:inline;"
+                      onsubmit="return confirm('确认强制取消该挂单？份额/积分将退还原用户。');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm">强制取消</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    {% else %}
+    <p style="color:#888;font-size:1.1rem;padding:2rem 0;text-align:center;">当前无活跃挂单</p>
+    {% endif %}
+</div>
+
+<div class="card" style="padding:2.5rem;">
+    <h2 style="font-size:1.6rem;margin-bottom:1.5rem;">近期成交记录</h2>
+    {% if all_trades %}
+    <div style="overflow-x:auto;">
+    <table style="font-size:1.05rem;">
+        <thead><tr>
+            <th style="padding:1rem 1.2rem;">交易号</th>
+            <th style="padding:1rem 1.2rem;">买方</th>
+            <th style="padding:1rem 1.2rem;">卖方</th>
+            <th style="padding:1rem 1.2rem;">绿证</th>
+            <th style="padding:1rem 1.2rem;">份额</th>
+            <th style="padding:1rem 1.2rem;">成交价</th>
+            <th style="padding:1rem 1.2rem;">总价</th>
+            <th style="padding:1rem 1.2rem;">时间</th>
+        </tr></thead>
+        <tbody>
+        {% for trade in all_trades %}
+        <tr>
+            <td style="padding:1rem 1.2rem;">#{{ trade.pk }}</td>
+            <td style="padding:1rem 1.2rem;">{{ trade.buyer.username }}</td>
+            <td style="padding:1rem 1.2rem;">{{ trade.seller.username }}</td>
+            <td style="padding:1rem 1.2rem;font-size:.9rem;">{{ trade.certificate.cert_id }}</td>
+            <td style="padding:1rem 1.2rem;">{{ trade.shares }}</td>
+            <td style="padding:1rem 1.2rem;">{{ trade.price_per_share }}</td>
+            <td style="padding:1rem 1.2rem;">{{ trade.total_price }}</td>
+            <td style="padding:1rem 1.2rem;font-size:.9rem;">{{ trade.created_at|date:"Y-m-d H:i" }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    {% else %}
+    <p style="color:#888;font-size:1.1rem;padding:2rem 0;text-align:center;">暂无成交记录</p>
+    {% endif %}
+</div>
+{% endblock %}
